@@ -55,6 +55,31 @@ code {
   width: 100%;
 }
 
+/* #controls-container .MuiSlider-root {
+  margin-top : 40px;
+} */
+
+.slider-description {
+  padding-top: 5%;
+  display    : flex;
+  align-items: center;
+  flex-flow  : wrap;
+}
+
+.info-icon {
+  opacity: 0.3;
+  transform: scale(0.8);
+}
+
+/* .slider-description * {
+
+  padding-top : 5px;
+  padding-bottom : 5px;
+  display: inline;
+  height: 50px;
+  line-height: 50px;
+  white-space: nowrap;
+} */
 
 #hidden-input {
   position: absolute;

@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect } from "react";
 import Paper from '@material-ui/core/Paper'
 import Button from '@material-ui/core/Button'
+import Tooltip from '@material-ui/core/Tooltip';
 import CloudUploadIcon from '@material-ui/icons/Publish';
 import CloudDownloadIcon from '@material-ui/icons/GetApp';
+import InfoIcon from '@material-ui/icons/Info'
 import MusicNoteIcon from '@material-ui/icons/MusicNote';
 import Typography from '@material-ui/core/Typography'
 import { Midi } from '@tonejs/midi'
@@ -10,12 +12,10 @@ import * as Constants from '../constants'
 import Slider from '@material-ui/core/Slider';
 import * as Utils from '../utils'
 import * as tf from '@tensorflow/tfjs';
-import clonedeep from "lodash.clonedeep"
 import cloneDeep from "lodash.clonedeep";
 
-// replace midi
-// set up separate midi file download for predicted bars only
-// download button saying (download last prediction)
+// disable download button if bars changes
+// some kind of visual, showing distribution of velocities?
 
 function modelInputsFromNotes(notes) {
   // tensorflowjs docs SAYS that a dictionary of named inputs can be passed in... but problems include:
@@ -33,6 +33,14 @@ function modelInputsFromNotes(notes) {
     'PCn_in': tf.reshape(tf.oneHot(notes.map(note => (note.midi - Constants.MIDI_A0) % 12), 12), [1, notes.length, 12]) // pitch class., 12 bit vectors
   };
   return modelInputs;
+}
+
+function usePrevious(value) {
+  const ref = useRef();
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
 }
 
 
@@ -63,9 +71,15 @@ export default function Controls(props) {
     props.setFilteredNotes(midi.tracks[0].notes.filter(note => note.subbeat < (props.bars * Constants.BEATS * Constants.SUBBEATS)))
     console.log(midi.tracks[0].notes)
   }
-  
-  const [midiDownloadLink, setMidiDownloadLink] = useState()
 
+  const [midiDownloadLink, setMidiDownloadLink] = useState()
+  const [downloadEnabled, setDownloadEnabled] = useState(false)
+
+  const prevBars = usePrevious(props.bars)
+
+  if (downloadEnabled & prevBars !== props.bars) {
+    setDownloadEnabled(false)
+  }
 
 
   // get a reference for the input element, so it can be triggered
@@ -113,6 +127,7 @@ export default function Controls(props) {
         const midiBlob = new Blob([midiFileDownload.toArray()], { type: "octet/stream" })
         setMidiDownloadLink(URL.createObjectURL(midiBlob))
         props.midiFile.tracks[0].notes = newNotes
+        setDownloadEnabled(true)
       })
   }
 
@@ -120,6 +135,7 @@ export default function Controls(props) {
   const reader = new FileReader();
   // when file is loaded, process
   reader.addEventListener('load', function () {
+    setDownloadEnabled(false)
     // read file into new Midi object
     const midi = new Midi(reader.result);
     if (midi.tracks.length > 1) alert("midi file has more than one track, first will be used");
@@ -131,9 +147,8 @@ export default function Controls(props) {
 
   // function for dealing with file selection (attach as onChange event handler)
   function fileReceived(e) {
-    // if user clicks 'cancel' on file dialogue, e will be undefined
-    if (typeof e === 'undefined') return null;
-    console.log(e.target.files)
+    // if user clicks 'cancel' on file dialogue, the filelist might be zero
+    if (typeof e === 'undefined' || e.target.files.length === 0) return null;
     const selectedFile = e.target.files[0];
     console.log(selectedFile)
     if (Constants.VALID_EXTENSIONS.indexOf(selectedFile.name.split('.').pop()) >= 0) {
@@ -168,6 +183,7 @@ export default function Controls(props) {
       </Button>
       <Button
         variant="contained"
+        color='secondary'
         disabled={props.encoder === null || props.decoder === null || props.midiFile === null}
         endIcon={<MusicNoteIcon />}
         className='control-button'
@@ -181,18 +197,44 @@ export default function Controls(props) {
         color='secondary'
         endIcon={<CloudDownloadIcon />}
         className='control-button'
-        disabled={props.midiFile === null}
-        href={midiDownloadLink}
-        download="output.midi"
+        disabled={!downloadEnabled}
+        onClick={() => {
+          const remappedNotes = cloneDeep(props.filteredNotes)
+          remappedNotes.forEach(note => note.velocity = Utils.remapVelocity(note.velocity, props.velocityRange[0], props.velocityRange[1]))
+          const midiDownload = Object.create(props.midiFile)
+          midiDownload.tracks[0].notes = remappedNotes
+          const midiBlob = new Blob([midiDownload.toArray()], { type: "octet/stream" })
+          var elem = window.document.createElement('a');
+          elem.href = window.URL.createObjectURL(midiBlob);
+          elem.download = 'prediction.mid';
+          // document.body.appendChild(elem);
+          elem.click();
+        }}
+      // or, not using onClick, can do it like this, making the download link elsewhere:
+      // href={midiDownloadLink}
+      // download="output.midi"
       >
         Download Prediction
       </Button>
+
+      <Typography className='slider-description' variant='button'>
+        <Tooltip title='Select the number of bars to use'><InfoIcon fontSize='small' className='info-icon' /></Tooltip>
+        <span>
+          Bars
+        </span>
+      </Typography>
+
       <Slider
         defaultValue={Constants.BARS}
         getAriaValueText={value => `${value} bars`}
         min={1}
         max={12}
-        valueLabelDisplay={props.midiFile === null ? 'off' : 'on'}
+        marks={
+          [
+            { value: 4, label: '4 bars' },
+            { value: 8, label: '8 bars' }
+          ]}
+        valueLabelDisplay={props.midiFile === null ? 'off' : 'auto'}
         // Could do this updating only on mouse up, but then if the mouse is moved off before mouse up...
         // onMouseUp={(e) => {
         //   const newBars = parseInt(e.target.ariaValueNow);
@@ -206,13 +248,26 @@ export default function Controls(props) {
         }
         disabled={props.midiFile === null}
       />
+      <Typography className='slider-description' variant='button'>
+        <Tooltip title='Select the minimum and maximum MIDI velocity values'><InfoIcon fontSize='small' className='info-icon' /></Tooltip>
+        <span>
+          Velocity Scaling
+        </span>
+      </Typography>
       <Slider
         min={0}
         max={127}
+        marks={
+          [
+            { value: 0, label: '0' },
+            { value: 127, label: '127' }
+          ]}
         value={props.velocityRange}
+        valueLabelDisplay="auto"
         // need to fix this
         // onMouseUp={(e) => {const newValue = parseInt(e.target.ariaValueNow); props.setVelocityRange(newValue); updateMidi(props.midiFile, newValue)}}
         onChange={(e, v) => { props.setVelocityRange(v); console.log(v) }}
+        disabled={props.midiFile === null}
       />
 
 
