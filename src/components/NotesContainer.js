@@ -13,6 +13,7 @@ export default function NotesContainer(props) {
   }
 
   const noteBoxes = (props.filteredNotes ? props.filteredNotes.map(note => {
+    // this will create a warning about each child having a unique key, but this doesn't really matter, as order is always the same
     return <div className='note-box' style={{ gridColumn: note.subbeat + 1, gridRow: 88 - (note.midi - Constants.MIDI_A0 + 1), backgroundColor: velocityToColour(note.velocity)}} />
   }) : []
   )

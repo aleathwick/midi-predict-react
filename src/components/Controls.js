@@ -6,6 +6,7 @@ import CloudUploadIcon from '@material-ui/icons/Publish';
 import CloudDownloadIcon from '@material-ui/icons/GetApp';
 import InfoIcon from '@material-ui/icons/Info'
 import MusicNoteIcon from '@material-ui/icons/MusicNote';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Typography from '@material-ui/core/Typography'
 import { Midi } from '@tonejs/midi'
 import * as Constants from '../constants'
@@ -16,6 +17,7 @@ import cloneDeep from "lodash.clonedeep";
 
 // disable download button if bars changes
 // some kind of visual, showing distribution of velocities?
+// add in loading screen: https://material-ui.com/components/backdrop/
 
 function modelInputsFromNotes(notes) {
   // tensorflowjs docs SAYS that a dictionary of named inputs can be passed in... but problems include:
@@ -72,9 +74,9 @@ export default function Controls(props) {
     console.log(midi.tracks[0].notes)
   }
 
-  const [midiDownloadLink, setMidiDownloadLink] = useState()
   const [downloadEnabled, setDownloadEnabled] = useState(false)
-
+  const [predicting, setPredicting] = useState(false)
+  
   const prevBars = usePrevious(props.bars)
 
   if (downloadEnabled & prevBars !== props.bars) {
@@ -89,11 +91,11 @@ export default function Controls(props) {
   }
 
   function predictVelocity() {
+    setPredicting(true)
     // don't want this in place - want to use setState to replace previous midi
     const modelInputs = modelInputsFromNotes(props.filteredNotes)
     console.log(props.encoder.summary());
     let modelInputsFormatted = props.encoder.inputs.map(input => modelInputs[input.originalName]);
-    console.log(props.encoder.inputs)
     let encoded = props.encoder.predict(modelInputsFormatted, { batchSize: 1 });
     let vnOut = tf.zeros([1, 1, 1]);
     let predPromises = [];
@@ -119,15 +121,9 @@ export default function Controls(props) {
         const newFilteredNotes = newNotes.filter(note => note.subbeat < (props.bars * Constants.BEATS * Constants.SUBBEATS))
         props.setFilteredNotes(newFilteredNotes)
 
-        // file for download
-        // cloneDeep doesn't work for whole midi file...
-        // use Object.create instead
-        const midiFileDownload = Object.create(props.midiFile)
-        midiFileDownload.tracks[0].notes = newFilteredNotes
-        const midiBlob = new Blob([midiFileDownload.toArray()], { type: "octet/stream" })
-        setMidiDownloadLink(URL.createObjectURL(midiBlob))
         props.midiFile.tracks[0].notes = newNotes
         setDownloadEnabled(true)
+        setPredicting(false)
       })
   }
 
@@ -162,7 +158,7 @@ export default function Controls(props) {
 
   return (
     <Paper id="controls-container">
-      <Typography variant='h4'>File Controls</Typography>
+      <Typography variant='h4'>Controls</Typography>
 
       {/* one way of sorting input button, which is more difficult to get working with layout. see https://material-ui.com/guides/composition/  */}
       {/* <input accept="image/*" id="hidden-input" type="file" />
@@ -189,9 +185,8 @@ export default function Controls(props) {
         className='control-button'
         onClick={predictVelocity}
       >
-        Predict
+          Predict {predicting && <CircularProgress className='predict-progress' size={24} disableShrink={true} />}
       </Button>
-
       <Button
         variant="contained"
         color='secondary'
@@ -258,6 +253,9 @@ export default function Controls(props) {
         min={0}
         max={127}
         marks={
+            // COULD do this to show breaks marks for each note velocity...
+            // props.filteredNotes.map(note => ({ value: note.velocity * 127 }))
+            // }
           [
             { value: 0, label: '0' },
             { value: 127, label: '127' }
@@ -266,12 +264,21 @@ export default function Controls(props) {
         valueLabelDisplay="auto"
         // need to fix this
         // onMouseUp={(e) => {const newValue = parseInt(e.target.ariaValueNow); props.setVelocityRange(newValue); updateMidi(props.midiFile, newValue)}}
-        onChange={(e, v) => { props.setVelocityRange(v); console.log(v) }}
+        onChange={(e, v) => { props.setVelocityRange(v)}}
         disabled={props.midiFile === null}
       />
 
-
+      <Button
+        variant="contained"
+        color='primary'
+        endIcon={<InfoIcon />}
+        className='control-button bottom-button'
+        onClick={() => props.setInfoOpen(true)}
+      >
+        Info
+      </Button>
     </Paper>
+    
 
 
   )

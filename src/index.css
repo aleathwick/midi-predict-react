@@ -50,6 +50,19 @@ code {
   margin: 2%;
 }
 
+#controls-container .bottom-button {
+  margin-top: auto;
+}
+
+.predict-progress {
+  position: absolute;
+  margin: auto;
+  /* position: relative; */
+  /* margin: auto; */
+  /* top: 50%;
+  left: 50%; */
+}
+
 /* use this, if using the label approach to material ui inputs: https://material-ui.com/guides/composition/ */
 #controls-container label * {
   width: 100%;

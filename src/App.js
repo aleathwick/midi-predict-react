@@ -5,6 +5,7 @@ import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import Controls from './components/Controls'
 import NotesContainer from './components/NotesContainer'
+import Info from './components/Info'
 import * as tf from '@tensorflow/tfjs';
 import * as Constants from './constants'
 
@@ -20,10 +21,11 @@ function App(props) {
   const [encoder, setEncoder] = useState(encoderPromise);
   const [decoder, setDecoder] = useState(decoderPromise);
   const [velocityRange, setVelocityRange] = React.useState([0, 127]);
+  const [infoOpen, setInfoOpen] = React.useState(false);
 
   Promise.all([props.encoderPromise, props.decoderPromse])
     .then(models => {
-      // this is happening >10 times, on each render. At least the model load is only happening once.
+      // this is happening >10 times. At least the model load is only happening once.
       setEncoder(models[0])
       setDecoder(models[1])
     })
@@ -43,6 +45,7 @@ function App(props) {
       setFilteredNotes={setFilteredNotes}
       velocityRange={velocityRange}
       setVelocityRange={setVelocityRange}
+      setInfoOpen={setInfoOpen}
       bars={bars}
       setBars={setBars}
       encoder={encoder}
@@ -52,6 +55,10 @@ function App(props) {
         filteredNotes={filteredNotes}
         bars={bars}
         velocityRange={velocityRange}
+      />
+      <Info
+      infoOpen={infoOpen}
+      setInfoOpen={setInfoOpen}
       />
     </div>
   );
