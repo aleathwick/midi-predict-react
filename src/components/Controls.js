@@ -76,6 +76,7 @@ export default function Controls(props) {
 
   const [downloadEnabled, setDownloadEnabled] = useState(false)
   const [predicting, setPredicting] = useState(false)
+  const [predictProgress, setPredictProgress] = useState(0)
   
   const prevBars = usePrevious(props.bars)
 
@@ -100,6 +101,7 @@ export default function Controls(props) {
     let vnOut = tf.zeros([1, 1, 1]);
     let predPromises = [];
     for (let i = 0; i < encoded.shape[1]; i++) {
+      setPredictProgress(i / encoded.shape[1] * 100)
       let stepInput = { encoded: encoded.slice([0, i, 0], [1, 1, encoded.shape.slice(-1)[0]]), Vn_ar: vnOut };
       let stepInputFormatted = props.decoder.inputs.map(input => stepInput[input.originalName])
       vnOut = props.decoder.predict(stepInputFormatted, { batchSize: 1 });
@@ -185,8 +187,9 @@ export default function Controls(props) {
         className='control-button'
         onClick={predictVelocity}
       >
-          Predict {predicting && <CircularProgress className='predict-progress' size={24} disableShrink={true} />}
+          Predict {predicting && <CircularProgress className='predict-progress' size={24} variant='determinate' value={predictProgress}/>}
       </Button>
+
       <Button
         variant="contained"
         color='secondary'
