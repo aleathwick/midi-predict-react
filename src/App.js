@@ -10,20 +10,20 @@ import * as tf from '@tensorflow/tfjs';
 import * as Constants from './constants'
 
 
-const encoderPromise = tf.loadLayersModel('models/532_tfjs_best_val_encoder_no_seq/model.json');
-const decoderPromise = tf.loadLayersModel('models/532_tfjs_best_val_decoder_no_seq/model.json');
+// const encoderPromise = tf.loadLayersModel('/models/532_tfjs_best_val_encoder_no_seq/model.json');
+// const decoderPromise = tf.loadLayersModel('/models/532_tfjs_best_val_decoder_no_seq/model.json');
 
 function App(props) {
   const [midiFile, setMidiFile] = useState(null);
   const [notes, setNotes] = useState(null);
   const [filteredNotes, setFilteredNotes] = useState(null);
   const [bars, setBars] = useState(Constants.BARS)
-  const [encoder, setEncoder] = useState(encoderPromise);
-  const [decoder, setDecoder] = useState(decoderPromise);
+  const [encoder, setEncoder] = useState(null);
+  const [decoder, setDecoder] = useState(null);
   const [velocityRange, setVelocityRange] = React.useState([0, 127]);
   const [infoOpen, setInfoOpen] = React.useState(false);
 
-  Promise.all([props.encoderPromise, props.decoderPromse])
+  Promise.all([props.encoderPromise, props.decoderPromise])
     .then(models => {
       // this is happening >10 times. At least the model load is only happening once.
       setEncoder(models[0])
@@ -36,6 +36,7 @@ function App(props) {
 
   return (
     <div id="app-container">
+      
       <Controls
       midiFile={midiFile}
       setMidiFile={setMidiFile}

@@ -6,8 +6,8 @@ import reportWebVitals from './reportWebVitals';
 import * as tf from '@tensorflow/tfjs';
 
 
-const encoderPromise = tf.loadLayersModel('/models/532_tfjs_best_val_encoder_no_seq/model.json')
-const decoderPromse = tf.loadLayersModel('/models/532_tfjs_best_val_decoder_no_seq/model.json')
+const encoderPromise = tf.loadLayersModel(process.env.PUBLIC_URL + '/models/532_tfjs_best_val_encoder_no_seq/model.json')
+const decoderPromse = tf.loadLayersModel(process.env.PUBLIC_URL + '/models/532_tfjs_best_val_encoder_no_seq/model.json')
 
 Promise.all([encoderPromise, decoderPromse])
   .then(models => {
