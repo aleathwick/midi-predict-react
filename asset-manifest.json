@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/midi-predict-react/index.html/static/css/main.8c045bd0.chunk.css",
+    "main.js": "/midi-predict-react/index.html/static/js/main.1a776bf3.chunk.js",
+    "main.js.map": "/midi-predict-react/index.html/static/js/main.1a776bf3.chunk.js.map",
+    "runtime-main.js": "/midi-predict-react/index.html/static/js/runtime-main.e5ec4f9b.js",
+    "runtime-main.js.map": "/midi-predict-react/index.html/static/js/runtime-main.e5ec4f9b.js.map",
+    "static/js/2.01efeb24.chunk.js": "/midi-predict-react/index.html/static/js/2.01efeb24.chunk.js",
+    "static/js/2.01efeb24.chunk.js.map": "/midi-predict-react/index.html/static/js/2.01efeb24.chunk.js.map",
+    "static/js/3.f3e1be0d.chunk.js": "/midi-predict-react/index.html/static/js/3.f3e1be0d.chunk.js",
+    "static/js/3.f3e1be0d.chunk.js.map": "/midi-predict-react/index.html/static/js/3.f3e1be0d.chunk.js.map",
+    "index.html": "/midi-predict-react/index.html/index.html",
+    "static/css/main.8c045bd0.chunk.css.map": "/midi-predict-react/index.html/static/css/main.8c045bd0.chunk.css.map",
+    "static/js/2.01efeb24.chunk.js.LICENSE.txt": "/midi-predict-react/index.html/static/js/2.01efeb24.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.e5ec4f9b.js",
+    "static/js/2.01efeb24.chunk.js",
+    "static/css/main.8c045bd0.chunk.css",
+    "static/js/main.1a776bf3.chunk.js"
+  ]
+}
