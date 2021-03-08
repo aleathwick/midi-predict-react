@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/midi-predict-react/static/css/main.8c045bd0.chunk.css",
-    "main.js": "/midi-predict-react/static/js/main.3987bdc9.chunk.js",
-    "main.js.map": "/midi-predict-react/static/js/main.3987bdc9.chunk.js.map",
+    "main.js": "/midi-predict-react/static/js/main.46650822.chunk.js",
+    "main.js.map": "/midi-predict-react/static/js/main.46650822.chunk.js.map",
     "runtime-main.js": "/midi-predict-react/static/js/runtime-main.4e487ac3.js",
     "runtime-main.js.map": "/midi-predict-react/static/js/runtime-main.4e487ac3.js.map",
     "static/js/2.fe31bbf3.chunk.js": "/midi-predict-react/static/js/2.fe31bbf3.chunk.js",
@@ -17,6 +17,6 @@
     "static/js/runtime-main.4e487ac3.js",
     "static/js/2.fe31bbf3.chunk.js",
     "static/css/main.8c045bd0.chunk.css",
-    "static/js/main.3987bdc9.chunk.js"
+    "static/js/main.46650822.chunk.js"
   ]
 }
