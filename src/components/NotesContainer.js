@@ -15,7 +15,6 @@ export default function NotesContainer(props) {
 
   const barLines = []
   for(var bar = 1; bar < props.bars; bar++){
-    console.log((bar) * Constants.BEATS * Constants.SUBBEATS)
    barLines.push(
     <div
     style={{
@@ -37,7 +36,7 @@ export default function NotesContainer(props) {
     // this will create a warning about each child having a unique key, but this doesn't really matter, as order is always the same
     return (
       <Tooltip
-      enterDelay='0'
+      enterDelay={0}
       title={<div style={{'whiteSpace': 'pre'}}>
         Velocity: {Math.round(note.velocity * 127)}<br/>
         Scaled Velocity: {Math.round(Utils.remapVelocity(note.velocity, props.velocityRange[0], props.velocityRange[1]) * 127)}<br/>
