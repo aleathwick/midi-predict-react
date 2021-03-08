@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button'
 import Paper from '@material-ui/core/Paper'
@@ -18,16 +18,17 @@ function App(props) {
   const [notes, setNotes] = useState(null);
   const [filteredNotes, setFilteredNotes] = useState(null);
   const [bars, setBars] = useState(Constants.BARS)
-  const [encoder, setEncoder] = useState(null);
-  const [decoder, setDecoder] = useState(null);
   const [velocityRange, setVelocityRange] = React.useState([0, 127]);
   const [infoOpen, setInfoOpen] = React.useState(false);
+
+  const encoderRef = useRef(null)
+  const decoderRef = useRef(null)
 
   Promise.all([props.encoderPromise, props.decoderPromise])
     .then(models => {
       // this is happening >10 times. At least the model load is only happening once.
-      setEncoder(models[0])
-      setDecoder(models[1])
+      encoderRef.current = models[0]
+      decoderRef.current = models[1]
     })
     .catch(function (err) {
       console.log('model failed to load')
@@ -49,8 +50,8 @@ function App(props) {
       setInfoOpen={setInfoOpen}
       bars={bars}
       setBars={setBars}
-      encoder={encoder}
-      decoder={decoder}
+      encoderRef={encoderRef}
+      decoderRef={decoderRef}
       />
       <NotesContainer
         filteredNotes={filteredNotes}

@@ -7,10 +7,11 @@ import * as tf from '@tensorflow/tfjs';
 
 
 const encoderPromise = tf.loadLayersModel(process.env.PUBLIC_URL + '/models/532_tfjs_best_val_encoder_no_seq/model.json')
-const decoderPromse = tf.loadLayersModel(process.env.PUBLIC_URL + '/models/532_tfjs_best_val_encoder_no_seq/model.json')
+const decoderPromise = tf.loadLayersModel(process.env.PUBLIC_URL + '/models/532_tfjs_best_val_decoder_no_seq/model.json')
 
-Promise.all([encoderPromise, decoderPromse])
+Promise.all([encoderPromise, decoderPromise])
   .then(models => {
+    console.log(models)
     console.log('models loaded successfully')
   }
   )
@@ -19,7 +20,7 @@ ReactDOM.render(
     <React.StrictMode>
       <App
         encoderPromise={encoderPromise}
-        decoderPromse={decoderPromse}
+        decoderPromise={decoderPromise}
       />
     </React.StrictMode>,
     document.getElementById('root')

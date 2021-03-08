@@ -95,16 +95,17 @@ export default function Controls(props) {
     setPredicting(true)
     // don't want this in place - want to use setState to replace previous midi
     const modelInputs = modelInputsFromNotes(props.filteredNotes)
-    console.log(props.encoder.summary());
-    let modelInputsFormatted = props.encoder.inputs.map(input => modelInputs[input.originalName]);
-    let encoded = props.encoder.predict(modelInputsFormatted, { batchSize: 1 });
+    console.log(props.encoderRef.current.summary());
+    let modelInputsFormatted = props.encoderRef.current.inputs.map(input => modelInputs[input.originalName]);
+    let encoded = props.encoderRef.current.predict(modelInputsFormatted, { batchSize: 1 });
     let vnOut = tf.zeros([1, 1, 1]);
     let predPromises = [];
     for (let i = 0; i < encoded.shape[1]; i++) {
       setPredictProgress(i / encoded.shape[1] * 100)
       let stepInput = { encoded: encoded.slice([0, i, 0], [1, 1, encoded.shape.slice(-1)[0]]), Vn_ar: vnOut };
-      let stepInputFormatted = props.decoder.inputs.map(input => stepInput[input.originalName])
-      vnOut = props.decoder.predict(stepInputFormatted, { batchSize: 1 });
+      console.log(props.decoderRef)
+      let stepInputFormatted = props.decoderRef.current.inputs.map(input => stepInput[input.originalName])
+      vnOut = props.decoderRef.current.predict(stepInputFormatted, { batchSize: 1 });
       // tensor.array() turns a tensor into an array, returning a promise
       predPromises.push(vnOut.flatten().array())
     }
@@ -182,7 +183,7 @@ export default function Controls(props) {
       <Button
         variant="contained"
         color='secondary'
-        disabled={props.encoder === null || props.decoder === null || props.midiFile === null}
+        disabled={props.encoderRef.current === null || props.decoderRef.current === null || props.midiFile === null}
         endIcon={<MusicNoteIcon />}
         className='control-button'
         onClick={predictVelocity}
