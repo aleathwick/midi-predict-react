@@ -15,6 +15,8 @@ import * as Utils from '../utils'
 import * as tf from '@tensorflow/tfjs';
 import cloneDeep from "lodash.clonedeep";
 
+const DEFAULT_FILE = process.env.PUBLIC_URL + '/example_fc_62_Db.mid'
+
 // disable download button if bars changes
 // some kind of visual, showing distribution of velocities?
 // add in loading screen: https://material-ui.com/components/backdrop/
@@ -77,7 +79,7 @@ export default function Controls(props) {
   const [downloadEnabled, setDownloadEnabled] = useState(false)
   const [predicting, setPredicting] = useState(false)
   const [predictProgress, setPredictProgress] = useState(0)
-  
+
   const prevBars = usePrevious(props.bars)
 
   if (downloadEnabled & prevBars !== props.bars) {
@@ -140,9 +142,13 @@ export default function Controls(props) {
     if (midi.tracks.length > 1) alert("midi file has more than one track, first will be used");
     preprocessMidi(midi)
 
-
     // processMidi(midi);
   }, false)
+
+  function loadDefaultMidi() {
+    setDownloadEnabled(false);
+    Midi.fromUrl(DEFAULT_FILE).then(midi => preprocessMidi(midi));
+  }
 
   // function for dealing with file selection (attach as onChange event handler)
   function fileReceived(e) {
@@ -188,7 +194,7 @@ export default function Controls(props) {
         className='control-button'
         onClick={predictVelocity}
       >
-          Predict {predicting && <CircularProgress className='predict-progress' size={24} variant='determinate' value={predictProgress}/>}
+        Predict {predicting && <CircularProgress className='predict-progress' size={24} variant='determinate' value={predictProgress} />}
       </Button>
 
       <Button
@@ -257,9 +263,9 @@ export default function Controls(props) {
         min={0}
         max={127}
         marks={
-            // COULD do this to show breaks marks for each note velocity...
-            // props.filteredNotes.map(note => ({ value: note.velocity * 127 }))
-            // }
+          // COULD do this to show breaks marks for each note velocity...
+          // props.filteredNotes.map(note => ({ value: note.velocity * 127 }))
+          // }
           [
             { value: 0, label: '0' },
             { value: 127, label: '127' }
@@ -268,7 +274,7 @@ export default function Controls(props) {
         valueLabelDisplay="auto"
         // need to fix this
         // onMouseUp={(e) => {const newValue = parseInt(e.target.ariaValueNow); props.setVelocityRange(newValue); updateMidi(props.midiFile, newValue)}}
-        onChange={(e, v) => { props.setVelocityRange(v)}}
+        onChange={(e, v) => { props.setVelocityRange(v) }}
         disabled={props.midiFile === null}
       />
 
@@ -276,13 +282,22 @@ export default function Controls(props) {
         variant="contained"
         color='primary'
         endIcon={<InfoIcon />}
-        className='control-button bottom-button'
+        className='control-button bottom-button-start'
+        onClick={loadDefaultMidi}
+      >
+        Load Example
+      </Button>
+      <Button
+        variant="contained"
+        color='primary'
+        endIcon={<InfoIcon />}
+        className='control-button'
         onClick={() => props.setInfoOpen(true)}
       >
         Info
       </Button>
     </Paper>
-    
+
 
 
   )

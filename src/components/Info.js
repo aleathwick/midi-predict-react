@@ -40,7 +40,7 @@ export default function Info(props) {
             aria-describedby="scroll-dialog-description"
         >
             <DialogTitle id="scroll-dialog-title">Info</DialogTitle>
-            <DialogContent dividers={'body'}>
+            <DialogContent>
                 <DialogContentText
                     id="scroll-dialog-description"
                     ref={descriptionElementRef}
