@@ -50,20 +50,19 @@ export default function Info(props) {
                         This website provides a simple interface to deep learning models designed to predict velocities of notes in piano sequences.
                     </p>
                     <p>
-                        For MIDI files to work properly with this website, they should:
-                        <ul>
-                            <li>Be in 4/4 time signature</li>
-                            <li>Have a tempo that accurately reflects the tempo of the music</li>
-                            <li>Have notes that fall closest in time to the timestamp of the actual nearest semi-quaver/16th as determined by the tempo
-                            (so that notes can be quantized accurately)</li>
-                            <li>Contain all notes for prediction in the first midi track</li>
-                        </ul>
-                    </p>
-                    <p>
                         For more info, see:
                         <ul>
                             <li><a href='https://soundcloud.com/user-611170338/sets/deep-learning-and-music-humanizing-piano-scores-longer-examples'>Audio examples</a> of model outputs</li>
                             <li><a href='https://github.com/aleathwick/781-piano-autoencoder'>Github repo</a>, including datasets and code for parsing data and training models</li>
+                        </ul>
+                    </p>
+                    <p>
+                        For MIDI files to work properly with this website, they should:
+                        <ul>
+                            <li>Be in 4/4 time signature</li>
+                            <li>Have metadata indicating the true tempo of the music</li>
+                            <li>Have notes that quantize correctly to the nearest semi-quaver/16th note</li>
+                            <li>Have all notes in the first track of the midi file</li>
                         </ul>
                     </p>
 
